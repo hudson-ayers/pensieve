@@ -509,7 +509,9 @@ function AbrController() {
         switch(abrAlgo) {
             case 2:
                 var xhr = new XMLHttpRequest();
-                xhr.open("POST", "http://localhost:8333", false);
+                var AddressToOpen = "http://" + location.hostname + ":8333";
+                console.log("DEBUG: AddressToOpen is: " + AddressToOpen)
+                xhr.open("POST", AddressToOpen, false);
                 xhr.onreadystatechange = function() {
                     if ( xhr.readyState == 4 && xhr.status == 200 ) {
                         console.log("GOT RESPONSE:" + xhr.responseText + "---");
@@ -523,7 +525,9 @@ function AbrController() {
                 return getBitrateBB(buffer);
             case 3:
                 var xhr = new XMLHttpRequest();
-                xhr.open("POST", "http://localhost:8333", false);
+                var AddressToOpen = "http://" + location.hostname + ":8333";
+                console.log("DEBUG: AddressToOpen is: " + AddressToOpen)
+                xhr.open("POST", AddressToOpen, false);
                 xhr.onreadystatechange = function() {
                     if ( xhr.readyState == 4 && xhr.status == 200 ) {
                         console.log("GOT RESPONSE:" + xhr.responseText + "---");
@@ -538,7 +542,9 @@ function AbrController() {
             case 4:
                 var quality = 2;
                 var xhr = new XMLHttpRequest();
-                xhr.open("POST", "http://localhost:8333", false);
+                var AddressToOpen = "http://" + location.hostname + ":8333";
+                console.log("DEBUG: AddressToOpen is: " + AddressToOpen)
+                xhr.open("POST", AddressToOpen, false);
                 xhr.onreadystatechange = function() {
                     if ( xhr.readyState == 4 && xhr.status == 200 ) {
                         console.log("GOT RESPONSE:" + xhr.responseText + "---");
@@ -556,7 +562,9 @@ function AbrController() {
                 return quality;
             case 5:
                 var xhr = new XMLHttpRequest();
-                xhr.open("POST", "http://localhost:8333", false);
+                var AddressToOpen = "http://" + location.hostname + ":8333";
+                console.log("DEBUG: AddressToOpen is: " + AddressToOpen)
+                xhr.open("POST", AddressToOpen, false);
                 xhr.onreadystatechange = function() {
                     if ( xhr.readyState == 4 && xhr.status == 200 ) {
                         console.log("GOT RESPONSE:" + xhr.responseText + "---");
@@ -571,7 +579,9 @@ function AbrController() {
                 return getBitrateFestive(lastQuality, bufferLevelAdjusted, bandwidthEst, lastRequested, bitrateArray);
             case 6:
                 var xhr = new XMLHttpRequest();
-                xhr.open("POST", "http://localhost:8333", false);
+                var AddressToOpen = "http://" + location.hostname + ":8333";
+                console.log("DEBUG: AddressToOpen is: " + AddressToOpen)
+                xhr.open("POST", AddressToOpen, false);
                 xhr.onreadystatechange = function() {
                     if ( xhr.readyState == 4 && xhr.status == 200 ) {
                         console.log("GOT RESPONSE:" + xhr.responseText + "---");
@@ -586,7 +596,9 @@ function AbrController() {
             default:
                 // defaults to lowest quality always
                 var xhr = new XMLHttpRequest();
-                xhr.open("POST", "http://localhost:8333", false);
+                var AddressToOpen = "http://" + location.hostname + ":8333";
+                console.log("DEBUG: AddressToOpen is: " + AddressToOpen)
+                xhr.open("POST", AddressToOpen, false);
                 xhr.onreadystatechange = function() {
                     if ( xhr.readyState == 4 && xhr.status == 200 ) {
                         console.log("GOT RESPONSE:" + xhr.responseText + "---");
