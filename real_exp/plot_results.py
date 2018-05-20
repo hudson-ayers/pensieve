@@ -39,15 +39,12 @@ def main():
 		bw = []
 		reward = []
 
-		print log_file
 
 		with open(RESULTS_FOLDER + log_file, 'rb') as f:
                         for line in f:
-                                print "Reading a line"
                                 parse = line.split()
                                 if len(parse) <= 1:
                                         break
-                                print "About to populate arrays"
                                 time_ms.append(float(parse[0]))
                                 bit_rate.append(int(parse[1]))
                                 buff.append(float(parse[2]))
@@ -56,12 +53,6 @@ def main():
 
 		time_ms = np.array(time_ms)
 		time_ms -= time_ms[0]
-		print log_file
-                print str(time_ms)
-                print str(bit_rate)
-                print str(buff)
-                print str(bw)
-                print str(reward)
 		for scheme in SCHEMES:
 			if scheme in log_file:
 				time_all[scheme][log_file[len('log_' + str(scheme) + '_'):]] = time_ms
@@ -83,14 +74,12 @@ def main():
 		reward_all[scheme] = []
 
 	for l in time_all[SCHEMES[0]]:
-                print "in time_all[SCHEMES]"
 		schemes_check = True
 		for scheme in SCHEMES:
 			if l not in time_all[scheme] or len(time_all[scheme][l]) < VIDEO_LEN:
 				schemes_check = False
 				break
 		if schemes_check:
-                        print "In svhemes check"
 			log_file_all.append(l)
 			for scheme in SCHEMES:
 				if scheme == SIM_DP:
