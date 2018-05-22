@@ -30,7 +30,7 @@ def main():
         buff_all[scheme] = {}
         bw_all[scheme] = {}
         qoe_all[scheme] = {}
-        qoe_vals[scheme] = {}
+        qoe_vals[scheme] = []
 
     log_files = os.listdir(RESULTS_FOLDER)
     for log_file in log_files:
@@ -75,7 +75,7 @@ def main():
                 buff_all[scheme][log_file_id] = buff
                 bw_all[scheme][log_file_id] = bw
                 raw_reward_all[scheme][log_file_id] = reward
-                qoe_vals[scheme][log_file_id] = qoe_val_normalized
+                qoe_vals[scheme].append(qoe_val_normalized)
                 qoe_all[scheme][log_file_id] = \
                         (qoe_val_normalized, qoe_val, bitrate_sum, rebuffer_sum, bitrate_diff_sum)
                 print "QoE for Scheme: ", scheme + " " + str(log_file_id)
@@ -91,6 +91,7 @@ def main():
         for scheme in SCHEMES:
             qoe_results.append(np.mean(qoe_vals[scheme]))
         plt.bar(SCHEMES, qoe_results)
+        plt.show()
 
 
 if __name__ == '__main__':
