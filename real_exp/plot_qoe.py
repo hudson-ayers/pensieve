@@ -21,6 +21,7 @@ def main():
     bw_all = {}
     raw_reward_all = {}
     qoe_all = {}
+    qoe_vals = {}
 
     for scheme in SCHEMES:
         time_all[scheme] = {}
