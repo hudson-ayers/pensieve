@@ -1,7 +1,6 @@
 import os
 import sys
 
-IN_RESULTS_DIR = "./old_results"
 OUT_RESULTS_DIR = "./results"
 
 # out_prefix is the prefix of the file to write (INCLUDING THE DIRECTORY). The
@@ -25,9 +24,12 @@ def split_into_files(out_prefix, infile_name):
 # filename is the name of the individual file, indir_name is the name of the
 # input directory (so that we can open the file), and outdir_name is the
 # name of the output directory, so we can write the output files
-def split_single_file(filename, indir_name, outdir_name):
-    outfile_prefix = outdir_name + "/" + filename[:filename.rfind('_')]
-    split_into_files(outfile_prefix, indir_name + "/" + filename)
+def split_single_file(file_path, outdir_name, outfile_prefix = None):
+    filename = file_path[file_path.rfind('/')+1:]
+    if outfile_prefix is None:
+        outfile_prefix = filename[:filename.rfind('_')]
+    outfile_path = outdir_name + "/" + outfile_prefix
+    split_into_files(outfile_path, file_path)
 
 if __name__ == '__main__':
     if len(sys.argv) <= 1:
@@ -35,4 +37,7 @@ if __name__ == '__main__':
         sys.exit(-1)
 
     file_to_split = sys.argv[1]
-    split_single_file(file_to_split, IN_RESULTS_DIR, OUT_RESULTS_DIR)
+    if len(sys.argv) <= 2:
+        split_single_file(file_to_split, OUT_RESULTS_DIR)
+    else:
+        split_single_file(file_to_split, OUT_RESULTS_DIR, sys.argv[2])
