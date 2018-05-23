@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 RESULTS_FOLDER = './results/'
 SCHEMES = ['RL', 'robustMPC']
+TESTS = ['Verizon_LTE', 'International_Link', 'Stanford_Wifi']
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
 M_IN_B = 1000000.0
@@ -67,34 +68,41 @@ def main():
         time_ms = np.array(time_ms)
         time_ms -= time_ms[0]
 
-        for scheme in SCHEMES:
-            if scheme in log_file:
-                log_file_id = log_file[len('log_' + str(scheme) + '_'):]
-                time_all[scheme][log_file_id] = time_ms
-                bit_rate_all[scheme][log_file_id] = bit_rate
-                buff_all[scheme][log_file_id] = buff
-                bw_all[scheme][log_file_id] = bw
-                raw_reward_all[scheme][log_file_id] = reward
-                qoe_vals[scheme].append(qoe_val_normalized)
-                qoe_all[scheme][log_file_id] = \
-                        (qoe_val_normalized, qoe_val, bitrate_sum, rebuffer_sum, bitrate_diff_sum)
-                print "QoE for Scheme: ", scheme + " " + str(log_file_id)
-                print "Bitrate sum: ", bitrate_sum
-                print "Rebuffer sum: ", rebuffer_sum
-                print "Bitrate diff sum: ", bitrate_diff_sum
-                print "Computed QoE metric of: ", qoe_val
-                print "Computed normalized QoE metric of: ", qoe_val_normalized
-                print "\n"
-                break
+        for test in TESTS:
+            for scheme in SCHEMES:
+                if test in log_file and scheme in log_file:
+                    log_file_id = log_file[len(str(test) + '_log_' + str(scheme) + '_'):]
+                    time_all[scheme][test][log_file_id] = time_ms
+                    bit_rate_all[scheme][test][log_file_id] = bit_rate
+                    buff_all[scheme][test][log_file_id] = buff
+                    bw_all[scheme][test][log_file_id] = bw
+                    raw_reward_all[scheme][test][log_file_id] = reward
+                    qoe_vals[scheme][test].append(qoe_val_normalized)
+                    qoe_all[scheme][test][log_file_id] = \
+                            (qoe_val_normalized, qoe_val, bitrate_sum, rebuffer_sum, bitrate_diff_sum)
+                    print "QoE for Scheme: ", scheme + " " + str(log_file_id)
+                    print "Bitrate sum: ", bitrate_sum
+                    print "Rebuffer sum: ", rebuffer_sum
+                    print "Bitrate diff sum: ", bitrate_diff_sum
+                    print "Computed QoE metric of: ", qoe_val
+                    print "Computed normalized QoE metric of: ", qoe_val_normalized
+                    print "\n"
+                    break
 
-    qoe_results = []
-    qoe_stddev = []
+    qoe_results = {}
+    qoe_stddev = {}
     for scheme in SCHEMES:
-        print "QoE vals: ", qoe_vals[scheme]
-        qoe_results.append(np.mean(qoe_vals[scheme]))
-        qoe_stddev.append(np.std(qoe_vals[scheme]))
-    plt.title("Verizon LTE")
-    plt.bar(SCHEMES, qoe_results, yerr=qoe_stddev, capsize=5, width=0.5)
+        qoe_results[scheme] = []
+        qoe_stddev[scheme] = []
+        for test in TESTS:
+            print "QoE vals: ", qoe_vals[scheme][test]
+            qoe_results[scheme].append(np.mean(qoe_vals[scheme][test]))
+            qoe_stddev[scheme].append(np.std(qoe_vals[scheme][test]))
+
+    for i in range(len(TESTS)):
+        x_offset = i * 0.25
+        for scheme in SCHEMES:
+            plt.bar(X + x_offset, qoe_results[scheme], yerr=qoe_stddev[scheme], capsize=5, width=0.25)
     plt.show()
 
 
