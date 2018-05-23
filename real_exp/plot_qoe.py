@@ -87,11 +87,15 @@ def main():
                 print "\n"
                 break
 
-        qoe_results = []
-        for scheme in SCHEMES:
-            qoe_results.append(np.mean(qoe_vals[scheme]))
-        plt.bar(SCHEMES, qoe_results)
-        plt.show()
+    qoe_results = []
+    qoe_stddev = []
+    for scheme in SCHEMES:
+        print "QoE vals: ", qoe_vals[scheme]
+        qoe_results.append(np.mean(qoe_vals[scheme]))
+        qoe_stddev.append(np.std(qoe_vals[scheme]))
+    plt.title("Verizon LTE")
+    plt.bar(SCHEMES, qoe_results, yerr=qoe_stddev, capsize=5, width=0.5)
+    plt.show()
 
 
 if __name__ == '__main__':
