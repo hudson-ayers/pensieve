@@ -31,7 +31,15 @@ def main():
         buff_all[scheme] = {}
         bw_all[scheme] = {}
         qoe_all[scheme] = {}
-        qoe_vals[scheme] = []
+        qoe_vals[scheme] = {}
+        for test in TESTS:
+            time_all[scheme][test] = {}
+            raw_reward_all[scheme][test] = {}
+            bit_rate_all[scheme][test] = {}
+            buff_all[scheme][test] = {}
+            bw_all[scheme][test] = {}
+            qoe_all[scheme][test] = {}
+            qoe_vals[scheme][test] = []
 
     log_files = os.listdir(RESULTS_FOLDER)
     for log_file in log_files:
@@ -99,10 +107,26 @@ def main():
             qoe_results[scheme].append(np.mean(qoe_vals[scheme][test]))
             qoe_stddev[scheme].append(np.std(qoe_vals[scheme][test]))
 
-    for i in range(len(TESTS)):
-        x_offset = i * 0.25
-        for scheme in SCHEMES:
-            plt.bar(X + x_offset, qoe_results[scheme], yerr=qoe_stddev[scheme], capsize=5, width=0.25)
+    X = np.arange(len(TESTS))
+    x_offset = 0
+    plots_to_label = ()
+    label_names = ()
+    for scheme in SCHEMES:
+        plot = plt.bar(X + x_offset, qoe_results[scheme], yerr=qoe_stddev[scheme], label = scheme, capsize=5, width=0.25)
+        plots_to_label = plots_to_label + (plot[0],)
+        label_names = label_names + (scheme,)
+        x_offset += 0.25
+        print "SCHEME: ", scheme
+        print qoe_results[scheme]
+        print qoe_stddev[scheme]
+        print len(X)
+    # We assume the tests are in the correct order...
+    x_tick_labels = tuple(TESTS)
+    n_tests = len(TESTS)
+    offset = 0.125
+    ind = np.arange(offset, n_tests + offset)
+    plt.xticks(ind, x_tick_labels)
+    plt.legend(plots_to_label, label_names)
     plt.show()
 
 
