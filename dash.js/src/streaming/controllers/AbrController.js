@@ -579,7 +579,7 @@ function AbrController() {
                 return getBitrateFestive(lastQuality, bufferLevelAdjusted, bandwidthEst, lastRequested, bitrateArray);
             case 6:
                 var xhr = new XMLHttpRequest();
-                var AddressToOpen = "http://" + location.hostname + ":8333";
+                var AddressToOpen = "http://" + location.hostname + ":8335";
                 console.log("DEBUG: AddressToOpen is: " + AddressToOpen)
                 xhr.open("POST", AddressToOpen, false);
                 xhr.onreadystatechange = function() {
@@ -593,6 +593,28 @@ function AbrController() {
                 var data = {'nextChunkSize': next_chunk_size(lastRequested+1), 'Type': 'Bola', 'lastquality': lastQuality, 'buffer': buffer, 'bufferAdjusted': bufferLevelAdjusted, 'bandwidthEst': bandwidthEst, 'lastRequest': lastRequested, 'RebufferTime': rebuffer, 'lastChunkFinishTime': lastHTTPRequest._tfinish.getTime(), 'lastChunkStartTime': lastHTTPRequest.tresponse.getTime(), 'lastChunkSize': last_chunk_size(lastHTTPRequest)};
                 xhr.send(JSON.stringify(data));
                 return -1;
+            // this is to force robustMPC to behave correctly and contact the server at 8334
+            case 7:
+                var quality = 2;
+                var xhr = new XMLHttpRequest();
+                var AddressToOpen = "http://" + location.hostname + ":8334";
+                console.log("DEBUG: AddressToOpen is: " + AddressToOpen)
+                xhr.open("POST", AddressToOpen, false);
+                xhr.onreadystatechange = function() {
+                    if ( xhr.readyState == 4 && xhr.status == 200 ) {
+                        console.log("GOT RESPONSE:" + xhr.responseText + "---");
+                        if ( xhr.responseText != "REFRESH" ) {
+                            quality = parseInt(xhr.responseText, 10);
+                        } else {
+                            document.location.reload(true);
+                        }
+                    }
+                }
+                var bufferLevelAdjusted = buffer-0.15-0.4-4;
+                var data = {'nextChunkSize': next_chunk_size(lastRequested+1), 'lastquality': lastQuality, 'buffer': buffer, 'bufferAdjusted': bufferLevelAdjusted, 'bandwidthEst': bandwidthEst, 'lastRequest': lastRequested, 'RebufferTime': rebuffer, 'lastChunkFinishTime': lastHTTPRequest._tfinish.getTime(), 'lastChunkStartTime': lastHTTPRequest.tresponse.getTime(), 'lastChunkSize': last_chunk_size(lastHTTPRequest)};
+                xhr.send(JSON.stringify(data));
+                console.log("QUALITY RETURNED IS: " + quality);
+                return quality;
             default:
                 // defaults to lowest quality always
                 var xhr = new XMLHttpRequest();
