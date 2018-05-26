@@ -8,9 +8,9 @@ NUM_BINS = 100
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
 M_IN_B = 1000000.0
-VIDEO_LEN = 5
+VIDEO_LEN = 48
 VIDEO_BIT_RATE = [350, 600, 1000, 2000, 3000]
-COLOR_MAP = plt.cm.jet #nipy_spectral, Set1,Paired 
+COLOR_MAP = plt.cm.jet #nipy_spectral, Set1,Paired
 SIM_DP = 'sim_dp'
 #SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL',  'sim_rl', SIM_DP]
 SCHEMES = ['RL']
@@ -23,6 +23,15 @@ def main():
 	bw_all = {}
 	raw_reward_all = {}
 
+	log_files = os.listdir(RESULTS_FOLDER)
+        counter = 0
+        orig_scheme = SCHEMES[0]
+        del SCHEMES[0]
+	for log_file in log_files:
+            filename = orig_scheme + '_' + str(counter)
+            SCHEMES.insert(0, filename)
+            counter += 1
+        print str(SCHEMES)
 	for scheme in SCHEMES:
 		time_all[scheme] = {}
 		raw_reward_all[scheme] = {}
@@ -67,7 +76,6 @@ def main():
 	# ---- ---- ---- ----
 	# Reward records
 	# ---- ---- ---- ----
-		
 	log_file_all = []
 	reward_all = {}
 	for scheme in SCHEMES:

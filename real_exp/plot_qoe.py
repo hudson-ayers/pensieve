@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 
 RESULTS_FOLDER = './results/'
 SCHEMES = ['RL', 'robustMPC']
+TESTS = ['Verizon_LTE', 'International_Link', 'Stanford_Wifi']
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
 M_IN_B = 1000000.0
@@ -30,7 +31,15 @@ def main():
         buff_all[scheme] = {}
         bw_all[scheme] = {}
         qoe_all[scheme] = {}
-        qoe_vals[scheme] = []
+        qoe_vals[scheme] = {}
+        for test in TESTS:
+            time_all[scheme][test] = {}
+            raw_reward_all[scheme][test] = {}
+            bit_rate_all[scheme][test] = {}
+            buff_all[scheme][test] = {}
+            bw_all[scheme][test] = {}
+            qoe_all[scheme][test] = {}
+            qoe_vals[scheme][test] = []
 
     log_files = os.listdir(RESULTS_FOLDER)
     for log_file in log_files:
@@ -67,31 +76,58 @@ def main():
         time_ms = np.array(time_ms)
         time_ms -= time_ms[0]
 
-        for scheme in SCHEMES:
-            if scheme in log_file:
-                log_file_id = log_file[len('log_' + str(scheme) + '_'):]
-                time_all[scheme][log_file_id] = time_ms
-                bit_rate_all[scheme][log_file_id] = bit_rate
-                buff_all[scheme][log_file_id] = buff
-                bw_all[scheme][log_file_id] = bw
-                raw_reward_all[scheme][log_file_id] = reward
-                qoe_vals[scheme].append(qoe_val_normalized)
-                qoe_all[scheme][log_file_id] = \
-                        (qoe_val_normalized, qoe_val, bitrate_sum, rebuffer_sum, bitrate_diff_sum)
-                print "QoE for Scheme: ", scheme + " " + str(log_file_id)
-                print "Bitrate sum: ", bitrate_sum
-                print "Rebuffer sum: ", rebuffer_sum
-                print "Bitrate diff sum: ", bitrate_diff_sum
-                print "Computed QoE metric of: ", qoe_val
-                print "Computed normalized QoE metric of: ", qoe_val_normalized
-                print "\n"
-                break
+        for test in TESTS:
+            for scheme in SCHEMES:
+                if test in log_file and scheme in log_file:
+                    log_file_id = log_file[len(str(test) + '_log_' + str(scheme) + '_'):]
+                    time_all[scheme][test][log_file_id] = time_ms
+                    bit_rate_all[scheme][test][log_file_id] = bit_rate
+                    buff_all[scheme][test][log_file_id] = buff
+                    bw_all[scheme][test][log_file_id] = bw
+                    raw_reward_all[scheme][test][log_file_id] = reward
+                    qoe_vals[scheme][test].append(qoe_val_normalized)
+                    qoe_all[scheme][test][log_file_id] = \
+                            (qoe_val_normalized, qoe_val, bitrate_sum, rebuffer_sum, bitrate_diff_sum)
+                    print "QoE for Scheme: ", scheme + " " + str(log_file_id)
+                    print "Bitrate sum: ", bitrate_sum
+                    print "Rebuffer sum: ", rebuffer_sum
+                    print "Bitrate diff sum: ", bitrate_diff_sum
+                    print "Computed QoE metric of: ", qoe_val
+                    print "Computed normalized QoE metric of: ", qoe_val_normalized
+                    print "\n"
+                    break
 
-        qoe_results = []
-        for scheme in SCHEMES:
-            qoe_results.append(np.mean(qoe_vals[scheme]))
-        plt.bar(SCHEMES, qoe_results)
-        plt.show()
+    qoe_results = {}
+    qoe_stddev = {}
+    for scheme in SCHEMES:
+        qoe_results[scheme] = []
+        qoe_stddev[scheme] = []
+        for test in TESTS:
+            print "QoE vals: ", qoe_vals[scheme][test]
+            qoe_results[scheme].append(np.mean(qoe_vals[scheme][test]))
+            qoe_stddev[scheme].append(np.std(qoe_vals[scheme][test]))
+
+    X = np.arange(len(TESTS))
+    x_offset = 0
+    plots_to_label = ()
+    label_names = ()
+    for scheme in SCHEMES:
+        plot = plt.bar(X + x_offset, qoe_results[scheme], yerr=qoe_stddev[scheme], label = scheme, capsize=5, width=0.25)
+        plots_to_label = plots_to_label + (plot[0],)
+        label_names = label_names + (scheme,)
+        x_offset += 0.25
+        print "SCHEME: ", scheme
+        print qoe_results[scheme]
+        print qoe_stddev[scheme]
+        print len(X)
+    # We assume the tests are in the correct order...
+    x_tick_labels = tuple(TESTS)
+    n_tests = len(TESTS)
+    offset = 0.125
+    ind = np.arange(offset, n_tests + offset)
+    plt.xticks(ind, x_tick_labels)
+    plt.legend(plots_to_label, label_names)
+    plt.show()
 
 
 if __name__ == '__main__':
