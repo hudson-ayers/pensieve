@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 RESULTS_FOLDER = './results/'
-SCHEMES = ['RL', 'robustMPC']
+SCHEMES = ['RL', 'robustMPC', 'BOLA']
 TESTS = ['Verizon_LTE', 'International_Link', 'Stanford_Wifi']
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
@@ -99,7 +99,12 @@ def main():
 
     qoe_results = {}
     qoe_stddev = {}
+    colors = 'rgbkymc'
+    color_array = {}
+    counter = 0
     for scheme in SCHEMES:
+        color_array[scheme] = colors[counter]
+        counter += 1
         qoe_results[scheme] = []
         qoe_stddev[scheme] = []
         for test in TESTS:
@@ -112,7 +117,7 @@ def main():
     plots_to_label = ()
     label_names = ()
     for scheme in SCHEMES:
-        plot = plt.bar(X + x_offset, qoe_results[scheme], yerr=qoe_stddev[scheme], label = scheme, capsize=5, width=0.25)
+        plot = plt.bar(X + x_offset, qoe_results[scheme], yerr=qoe_stddev[scheme], label=scheme, capsize=5, width=0.25, color=color_array[scheme])
         plots_to_label = plots_to_label + (plot[0],)
         label_names = label_names + (scheme,)
         x_offset += 0.25

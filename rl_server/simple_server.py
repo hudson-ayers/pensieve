@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
 import SocketServer
+from SocketServer import ThreadingMixIn
 import base64
 import urllib
 import sys
@@ -94,8 +95,10 @@ def make_request_handler(input_dict):
 
     return Request_Handler
 
+class ThreadedHTTPServer(ThreadingMixIn, HTTPServer):
+    '''This class mmakes a multi-threaded HTTP server '''
 
-def run(server_class=HTTPServer, port=8335, log_file_path=LOG_FILE):
+def run(server_class=HTTPServer, port=8333, log_file_path=LOG_FILE):
 
     if not os.path.exists(SUMMARY_DIR):
         os.makedirs(SUMMARY_DIR)
@@ -111,10 +114,10 @@ def run(server_class=HTTPServer, port=8335, log_file_path=LOG_FILE):
         handler_class = make_request_handler(input_dict=input_dict)
 
         server_address = ('0.0.0.0', port)
-        httpd = server_class(server_address, handler_class)
+        server = ThreadedHTTPServer(server_address, handler_class)
+        server.allow_reuse_address = True
         print 'Listening on port ' + str(port)
-        httpd.serve_forever()
-
+        server.serve_forever()
 
 def main():
     if len(sys.argv) == 3:
