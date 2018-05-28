@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 RESULTS_FOLDER = './results/'
-SCHEMES = ['RL', 'robustMPC']
+SCHEMES = ['RL', 'robustMPC', 'BOLA']
 TESTS = ['Verizon_LTE', 'International_Link', 'Stanford_Wifi']
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
