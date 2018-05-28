@@ -13,7 +13,7 @@ VIDEO_BIT_RATE = [350, 600, 1000, 2000, 3000]
 COLOR_MAP = plt.cm.jet #nipy_spectral, Set1,Paired
 SIM_DP = 'sim_dp'
 #SCHEMES = ['BB', 'RB', 'FIXED', 'FESTIVE', 'BOLA', 'RL',  'sim_rl', SIM_DP]
-SCHEMES = ['RL']
+SCHEMES = ['Bola']
 
 
 def main():
@@ -155,9 +155,10 @@ def main():
 		if schemes_check:
 			fig = plt.figure()
 
+                        #plt.title('International Links - Pensieve')
 			ax = fig.add_subplot(311)
 			for scheme in SCHEMES:
-				ax.plot(time_all[scheme][l][:VIDEO_LEN], bit_rate_all[scheme][l][:VIDEO_LEN])
+				ax.plot(time_all[scheme][l][:VIDEO_LEN], bit_rate_all[scheme][l][:VIDEO_LEN], linewidth=3.0)
 			colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
 			for i,j in enumerate(ax.lines):
 				j.set_color(colors[i])	
@@ -166,7 +167,7 @@ def main():
 
 			ax = fig.add_subplot(312)
 			for scheme in SCHEMES:
-				ax.plot(time_all[scheme][l][:VIDEO_LEN], buff_all[scheme][l][:VIDEO_LEN])
+				ax.plot(time_all[scheme][l][:VIDEO_LEN], buff_all[scheme][l][:VIDEO_LEN], linewidth=3.0)
 			colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
 			for i,j in enumerate(ax.lines):
 				j.set_color(colors[i])	
@@ -174,7 +175,7 @@ def main():
 
 			ax = fig.add_subplot(313)
 			for scheme in SCHEMES:
-				ax.plot(time_all[scheme][l][:VIDEO_LEN], bw_all[scheme][l][:VIDEO_LEN])
+				ax.plot(time_all[scheme][l][:VIDEO_LEN], bw_all[scheme][l][:VIDEO_LEN], linewidth=3.0)
 			colors = [COLOR_MAP(i) for i in np.linspace(0, 1, len(ax.lines))]
 			for i,j in enumerate(ax.lines):
 				j.set_color(colors[i])	
