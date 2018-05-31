@@ -1,11 +1,11 @@
 #! /bin/bash
 
-FILE_PATH="old_results/mahimahi_lte"
+FILE_PATH="old_results/Public_Wifi"
 
 mkdir old_results
 mkdir $FILE_PATH
 
-for i in {0..10}
+for i in {0..120}
 do
     python2 ./real_world_run_video.py RL 480 1
     mv ./results/* ./$FILE_PATH/log_RL_$i
