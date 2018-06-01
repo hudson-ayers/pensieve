@@ -15,6 +15,7 @@ S_INFO = 4
 TIMER_STARTED = False
 
 def entropy_timer():
+    global ENTROPY_WEIGHT
     if ENTROPY_WEIGHT > 0.1:
         ENTROPY_WEIGHT -= 0.1
         t = Timer(75.0, entropy_timer)
@@ -35,6 +36,7 @@ def get_entropy_from_env():
     return entropy
 
 def get_entropy():
+    global TIMER_STARTED
     if not TIMER_STARTED:
         t = Timer(75.0, entropy_timer)
         t.start()
