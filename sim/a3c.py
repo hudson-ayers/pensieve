@@ -1,5 +1,6 @@
 import numpy as np
 from threading import Thread
+from threading import Timer
 import time
 import tensorflow as tf
 import tflearn
@@ -8,30 +9,38 @@ import os
 
 GAMMA = 0.99
 A_DIM = 5
-ENTROPY_WEIGHT = 5
+ENTROPY_WEIGHT = 5.0
 ENTROPY_EPS = 1e-6
 S_INFO = 4
 TIMER_STARTED = False
 
 def entropy_timer():
-    while(True):
-        time.sleep(75)
-        if float(os.environ['ENTROPY']) >  0.1:
-#    	    print "decrementing"
-    	    os.environ['ENTROPY'] = str(float(os.environ['ENTROPY']) - 0.1)
-        
+    if ENTROPY_WEIGHT > 0.1:
+        ENTROPY_WEIGHT -= 0.1
+        t = Timer(75.0, entropy_timer)
+        t.start()
+    else:
+        ENTROPY_WEIGHT = 0.1
 
 def get_entropy_from_env():
     global TIMER_STARTED
     if TIMER_STARTED != True :
-	os.environ['ENTROPY'] = '5.0'
-	entropyThread = Thread(target = entropy_timer)
-	entropyThread.start()
+        os.environ['ENTROPY'] = '5.0'
+        entropyThread = Thread(target = entropy_timer)
+        entropyThread.start()
     TIMER_STARTED = True
     #time.sleep(2)
     entropy = float(os.environ['ENTROPY'])
     print "ENTROPY: " + str(entropy)
     return entropy
+
+def get_entropy():
+    if not TIMER_STARTED:
+        t = Timer(75.0, entropy_timer)
+        t.start()
+        TIMER_STARTED = True
+    print "Entropy: " + str(ENTROPY_WEIGHT)
+    return ENTROPY_WEIGHT
 
 class ActorNetwork(object):
     """
