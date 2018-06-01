@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 import tflearn
+import os
 
 
 GAMMA = 0.99
@@ -9,6 +10,11 @@ ENTROPY_WEIGHT = 0.5
 ENTROPY_EPS = 1e-6
 S_INFO = 4
 
+
+def get_entropy_from_env():
+    entropy = float(os.environ['ENTROPY'])
+    print "ENTROPY: " + str(entropy)
+    return entropy
 
 class ActorNetwork(object):
     """
@@ -48,7 +54,7 @@ class ActorNetwork(object):
                        tf.log(tf.reduce_sum(tf.multiply(self.out, self.acts),
                                             reduction_indices=1, keep_dims=True)),
                        -self.act_grad_weights)) \
-                   + ENTROPY_WEIGHT * tf.reduce_sum(tf.multiply(self.out,
+                   + get_entropy_from_env() * tf.reduce_sum(tf.multiply(self.out,
                                                            tf.log(self.out + ENTROPY_EPS)))
 
         # Combine the gradients here
@@ -57,6 +63,7 @@ class ActorNetwork(object):
         # Optimization Op
         self.optimize = tf.train.RMSPropOptimizer(self.lr_rate).\
             apply_gradients(zip(self.actor_gradients, self.network_params))
+
 
     def create_actor_network(self):
         with tf.variable_scope('actor'):
