@@ -11,8 +11,10 @@ M_IN_B = 1000000.0
 REBUF_PENALTY = 4.3
 
 # Compute the worst two values, then find the corresponding QoE for the file
-def find_worst_qoe(bit_rate, rebuffer_time):
+def find_worst_qoe(bit_rate, rebuf_time):
     bitrate_diff_sum = 0
+    first_pos = 0
+    second_pos = 1
     for i in range(len(bit_rate)-1):
         for j in range(i+1, len(bit_rate)-1):
             quality_diff = abs(bit_rate[i] - bit_rate[j])
@@ -21,8 +23,8 @@ def find_worst_qoe(bit_rate, rebuffer_time):
                 first_pos = i
                 second_pos = j
     bitrate_diff_sum = bitrate_diff_sum / 1000.0
-    bitrate_sum = (bit_rate[i] + bit_rate[j]) / 1000.0
-    rebuffer_sum = rebuf_time[i] + rebuf_time[j]
+    bitrate_sum = (bit_rate[first_pos] + bit_rate[second_pos]) / 1000.0
+    rebuffer_sum = rebuf_time[first_pos] + rebuf_time[second_pos]
     qoe_val = bitrate_sum - REBUF_PENALTY * rebuffer_sum - bitrate_diff_sum
     qoe_val_normalized = qoe_val / 2
     return (qoe_val, qoe_val_normalized)
@@ -129,11 +131,14 @@ def main():
                     raw_reward_all[scheme][test][log_file_id] = reward
                     qoe_vals[scheme][test].append(qoe_val_normalized)
                     qoe_all[scheme][test][log_file_id] = \
-                            (qoe_val_normalized, qoe_val, bitrate_sum, rebuffer_sum, bitrate_diff_sum)
+                            (qoe_val_normalized, qoe_val)
+                            #(qoe_val_normalized, qoe_val, bitrate_sum, rebuffer_sum, bitrate_diff_sum)
                     print "QoE for Scheme: ", scheme + " " + str(log_file_id)
+                    '''
                     print "Bitrate sum: ", bitrate_sum
                     print "Rebuffer sum: ", rebuffer_sum
                     print "Bitrate diff sum: ", bitrate_diff_sum
+                    '''
                     print "Computed QoE metric of: ", qoe_val
                     print "Computed normalized QoE metric of: ", qoe_val_normalized
                     print "\n"
