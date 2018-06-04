@@ -1,6 +1,7 @@
 import os
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 
 RESULTS_FOLDER = './results/'
 SCHEMES = ['robustMPC', 'RL']
@@ -30,7 +31,7 @@ def find_worst_qoe(bit_rate, rebuf_time):
     return (qoe_val, qoe_val_normalized)
 
 # Compute the worst two values, then find the corresponding QoE for the file
-def find_best_qoe(bit_rate, rebuffer_time):
+def find_best_qoe(bit_rate, rebuf_time):
     bitrate_diff_sum = float('inf')
     for i in range(len(bit_rate)-1):
         for j in range(i+1, len(bit_rate)-1):
@@ -45,6 +46,21 @@ def find_best_qoe(bit_rate, rebuffer_time):
     qoe_val = bitrate_sum - REBUF_PENALTY * rebuffer_sum - bitrate_diff_sum
     qoe_val_normalized = qoe_val / 2
     return (qoe_val, qoe_val_normalized)
+
+def find_random_qoe(bit_rate, rebuf_time):
+    # Values here should be distinct
+    print ("Bit rate len: ", len(range(0, len(bit_rate))))
+    positions = random.sample(range(0, len(bit_rate)), 2)
+    first_pos = positions[0]
+    second_pos = positions[1]
+    bitrate_diff_sum = abs(bit_rate[first_pos] - bit_rate[second_pos])
+    bitrate_diff_sum = bitrate_diff_sum / 1000.0
+    bitrate_sum = (bit_rate[first_pos] + bit_rate[second_pos]) / 1000.0
+    rebuffer_sum = rebuf_time[first_pos] + rebuf_time[second_pos]
+    qoe_val = bitrate_sum - REBUF_PENALTY * rebuffer_sum - bitrate_diff_sum
+    qoe_val_normalized = qoe_val / 2
+    return (qoe_val, qoe_val_normalized)
+
 
 # Note that we are only interested in QoE lin, and so will only compute using
 # that metric.
@@ -115,7 +131,7 @@ def main():
         qoe_val_normalized = qoe_val / len(bit_rate)
         '''
 
-        (qoe_val, qoe_val_normalized) = find_worst_qoe(bit_rate, rebuf_time)
+        (qoe_val, qoe_val_normalized) = find_random_qoe(bit_rate, rebuf_time)
 
         time_ms = np.array(time_ms)
         time_ms -= time_ms[0]
