@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 RESULTS_FOLDER = './results/'
 SCHEMES = ['BOLA', 'robustMPC', 'RL']
-TESTS = ['Verizon_LTE', 'International_Link', 'Stanford_Visitor']
+TESTS = ['International_Link', 'Stanford_Visitor']
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
 M_IN_B = 1000000.0
