@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 RESULTS_FOLDER = './results/'
-SCHEMES = ['RL', 'robustMPC', 'Bola']
+SCHEMES = ['RL', 'retrained']
 TESTS = ['mahimahi-LTE', 'mahimahi-3G']
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
@@ -16,7 +16,7 @@ REBUF_PENALTY = 4.3
 # QoE = sum(q(R_n)) - u*sum(T_n) - sum(q(R_n) - q(R_n+1))
 def main():
 
-    colorsList = ['red', 'blue', 'orange']
+    colorsList = ['red', 'blue', 'orange', 'green']
     time_all = {}
     bit_rate_all = {}
     buff_all = {}

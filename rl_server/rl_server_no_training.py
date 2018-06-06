@@ -16,10 +16,10 @@ import a3c
 
 S_INFO = 6  # bit_rate, buffer_size, rebuffering_time, bandwidth_measurement, chunk_til_video_end
 S_LEN = 8  # take how many frames in the past
-A_DIM = 5
-VIDEO_BIT_RATE = [350,600,1000,2000,3000]  # Kbps
-BITRATE_REWARD = [1, 2, 3, 12, 15]
-BITRATE_REWARD_MAP = {0: 0, 350: 1, 600: 2, 1000: 3, 2000: 12, 3000: 15}
+A_DIM = 6
+VIDEO_BIT_RATE = [350,600,1000,2000,3000, 4000]  # Kbps
+BITRATE_REWARD = [1, 2, 3, 12, 15, 20]
+BITRATE_REWARD_MAP = {0: 0, 350: 1, 600: 2, 1000: 3, 2000: 12, 3000: 15, 4000: 20}
 M_IN_K = 1000.0
 BUFFER_NORM_FACTOR = 10.0
 CHUNK_TIL_VIDEO_END_CAP = 64.0
@@ -37,7 +37,7 @@ SUMMARY_DIR = './results'
 LOG_FILE = './results/log'
 # in format of time_stamp bit_rate buffer_size rebuffer_time video_chunk_size download_time reward
 # NN_MODEL = None
-NN_MODEL = '../rl_server/results/new_video_model.ckpt'
+NN_MODEL = '../rl_server/results/pretrain_linear_reward.ckpt'
 
 # video chunk sizes
 
@@ -52,6 +52,8 @@ def get_chunk_size(quality, index):
     if ( index < 0 or index > 64 ):
         return 0
     # note that the quality and video labels are inverted (i.e., quality 8 is highest and this pertains to video1)
+    if quality >= 5:
+        quality = 4
     sizes = {4: size_video1[index], 3: size_video2[index], 2: size_video3[index], 1: size_video4[index], 0: size_video5[index]}
     return sizes[quality]
 
