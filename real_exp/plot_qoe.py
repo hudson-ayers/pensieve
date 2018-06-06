@@ -3,8 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 RESULTS_FOLDER = './results/'
-SCHEMES = ['RL', 'robustMPC', 'BOLA']
-TESTS = ['Verizon_LTE', 'International_Link', 'Stanford_Wifi']
+#SCHEMES = ['BOLA', 'robustMPC', 'RL']
+SCHEMES = ['RL', 'retrained']
+TESTS = ['mahimahi-3G', 'mahimahi-LTE']
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
 M_IN_B = 1000000.0
@@ -16,6 +17,7 @@ REBUF_PENALTY = 4.3
 # QoE = sum(q(R_n)) - u*sum(T_n) - sum(q(R_n) - q(R_n+1))
 def main():
 
+    colorsList = ['orange', 'blue', 'red']
     time_all = {}
     bit_rate_all = {}
     buff_all = {}
@@ -23,8 +25,10 @@ def main():
     raw_reward_all = {}
     qoe_all = {}
     qoe_vals = {}
-
+    colors = {}
+    i = 0
     for scheme in SCHEMES:
+        colors[scheme] = colorsList[i]
         time_all[scheme] = {}
         raw_reward_all[scheme] = {}
         bit_rate_all[scheme] = {}
@@ -32,6 +36,7 @@ def main():
         bw_all[scheme] = {}
         qoe_all[scheme] = {}
         qoe_vals[scheme] = {}
+        i += 1
         for test in TESTS:
             time_all[scheme][test] = {}
             raw_reward_all[scheme][test] = {}
@@ -58,14 +63,14 @@ def main():
                     break
                 time_ms.append(float(parse[0]))
                 bit_rate.append(int(parse[1]))
-                buff.append(float(parse[2]))
+                buff.append(float(parse[3]))
                 bw.append(float(parse[4]) / float(parse[5]) * BITS_IN_BYTE * MILLISEC_IN_SEC / M_IN_B)
                 reward.append(float(parse[6]))
 
         # Compute QoE metric
         # QoE = sum(q(R_n)) - u*sum(T_n) - sum(q(R_n) - q(R_n+1))
         bitrate_sum = np.sum(bit_rate) / 1000.0
-        rebuffer_sum = np.sum(buff) / 1000.0
+        rebuffer_sum = np.sum(buff)
         bitrate_diff_sum = 0
         for j in range(len(bit_rate)-1):
             bitrate_diff_sum += abs(bit_rate[j] - bit_rate[j+1])
@@ -97,14 +102,10 @@ def main():
                     print "\n"
                     break
 
+    '''
     qoe_results = {}
     qoe_stddev = {}
-    colors = 'rgbkymc'
-    color_array = {}
-    counter = 0
     for scheme in SCHEMES:
-        color_array[scheme] = colors[counter]
-        counter += 1
         qoe_results[scheme] = []
         qoe_stddev[scheme] = []
         for test in TESTS:
@@ -117,7 +118,7 @@ def main():
     plots_to_label = ()
     label_names = ()
     for scheme in SCHEMES:
-        plot = plt.bar(X + x_offset, qoe_results[scheme], yerr=qoe_stddev[scheme], label=scheme, capsize=5, width=0.25, color=color_array[scheme])
+        plot = plt.bar(X + x_offset, qoe_results[scheme], yerr=qoe_stddev[scheme], label = scheme, capsize=5, width=0.25, color=colors[scheme])
         plots_to_label = plots_to_label + (plot[0],)
         label_names = label_names + (scheme,)
         x_offset += 0.25
@@ -125,13 +126,34 @@ def main():
         print qoe_results[scheme]
         print qoe_stddev[scheme]
         print len(X)
+        '''
+    qoe_results = {}
+    for scheme in SCHEMES:
+        qoe_results[scheme] = []
+        arr = []
+        for tests in TESTS:
+            arr = arr + qoe_vals[scheme][tests]
+        qoe_results[scheme].append(arr)
+    plots_to_label = ()
+    label_names = ()
+    for scheme in SCHEMES:
+    	plot = plt.hist(qoe_results[scheme], normed=True, cumulative=True, label='CDF', histtype='step')
+        plots_to_label = plots_to_label + (plot[0],)
+        #label_names = label_names + (scheme,)
+        if scheme == "RL":
+            label_names = label_names + ("Default",)
+        elif scheme == "retrained":
+            label_names = label_names + ("New Training",)
+        plot[2][0].set_xy(plot[2][0].get_xy()[:-1])
     # We assume the tests are in the correct order...
+    '''
     x_tick_labels = tuple(TESTS)
     n_tests = len(TESTS)
-    offset = 0.125
+    offset = 0.25
     ind = np.arange(offset, n_tests + offset)
     plt.xticks(ind, x_tick_labels)
-    plt.legend(plots_to_label, label_names)
+    '''
+    plt.legend(label_names)
     plt.show()
 
 
