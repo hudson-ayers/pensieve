@@ -123,7 +123,11 @@ def main():
     if len(sys.argv) == 3:
         abr_algo = sys.argv[1]
         trace_file = sys.argv[2]
-        run(log_file_path=LOG_FILE + '_' + abr_algo + '_' + trace_file)
+        if abr_algo == "BOLA":
+            port = 8335
+        else:
+            port = 8333
+        run(log_file_path=LOG_FILE + '_' + abr_algo + '_' + trace_file, port=port)
     else:
         run()
 
