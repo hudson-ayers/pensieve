@@ -3,8 +3,9 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 RESULTS_FOLDER = './results/'
-SCHEMES = ['BOLA', 'robustMPC', 'RL']
-TESTS = ['International_Link', 'Stanford_Visitor']
+#SCHEMES = ['BOLA', 'robustMPC', 'RL']
+SCHEMES = ['RL', 'retrained']
+TESTS = ['mahimahi-3G', 'mahimahi-LTE']
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
 M_IN_B = 1000000.0
@@ -101,6 +102,7 @@ def main():
                     print "\n"
                     break
 
+    '''
     qoe_results = {}
     qoe_stddev = {}
     for scheme in SCHEMES:
@@ -124,13 +126,34 @@ def main():
         print qoe_results[scheme]
         print qoe_stddev[scheme]
         print len(X)
+        '''
+    qoe_results = {}
+    for scheme in SCHEMES:
+        qoe_results[scheme] = []
+        arr = []
+        for tests in TESTS:
+            arr = arr + qoe_vals[scheme][tests]
+        qoe_results[scheme].append(arr)
+    plots_to_label = ()
+    label_names = ()
+    for scheme in SCHEMES:
+    	plot = plt.hist(qoe_results[scheme], normed=True, cumulative=True, label='CDF', histtype='step')
+        plots_to_label = plots_to_label + (plot[0],)
+        #label_names = label_names + (scheme,)
+        if scheme == "RL":
+            label_names = label_names + ("Default",)
+        elif scheme == "retrained":
+            label_names = label_names + ("New Training",)
+        plot[2][0].set_xy(plot[2][0].get_xy()[:-1])
     # We assume the tests are in the correct order...
+    '''
     x_tick_labels = tuple(TESTS)
     n_tests = len(TESTS)
     offset = 0.25
     ind = np.arange(offset, n_tests + offset)
     plt.xticks(ind, x_tick_labels)
-    plt.legend(plots_to_label, label_names)
+    '''
+    plt.legend(label_names)
     plt.show()
 
 
