@@ -2,22 +2,19 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 
-RESULTS_FOLDER = './results/'
-#SCHEMES = ['BOLA', 'robustMPC', 'RL']
-SCHEMES = ['RL', 'retrained']
-TESTS = ['mahimahi-3G', 'mahimahi-LTE']
 BITS_IN_BYTE = 8.0
 MILLISEC_IN_SEC = 1000.0
 M_IN_B = 1000000.0
 REBUF_PENALTY = 4.3
 
+COLOR_LIST = ['orange', 'blue', 'red']
+
 
 # Note that we are only interested in QoE lin, and so will only compute using
 # that metric.
 # QoE = sum(q(R_n)) - u*sum(T_n) - sum(q(R_n) - q(R_n+1))
-def main():
+def main(schemes, tests, results_folder, plot_cdf):
 
-    colorsList = ['orange', 'blue', 'red']
     time_all = {}
     bit_rate_all = {}
     buff_all = {}
@@ -27,8 +24,8 @@ def main():
     qoe_vals = {}
     colors = {}
     i = 0
-    for scheme in SCHEMES:
-        colors[scheme] = colorsList[i]
+    for scheme in schemes:
+        colors[scheme] = COLOR_LIST[i]
         time_all[scheme] = {}
         raw_reward_all[scheme] = {}
         bit_rate_all[scheme] = {}
@@ -37,7 +34,7 @@ def main():
         qoe_all[scheme] = {}
         qoe_vals[scheme] = {}
         i += 1
-        for test in TESTS:
+        for test in tests:
             time_all[scheme][test] = {}
             raw_reward_all[scheme][test] = {}
             bit_rate_all[scheme][test] = {}
@@ -46,7 +43,7 @@ def main():
             qoe_all[scheme][test] = {}
             qoe_vals[scheme][test] = []
 
-    log_files = os.listdir(RESULTS_FOLDER)
+    log_files = os.listdir(results_folder)
     for log_file in log_files:
 
         time_ms = []
@@ -55,7 +52,7 @@ def main():
         bw = []
         reward = []
 
-        with open(RESULTS_FOLDER + log_file, 'rb') as f:
+        with open(results_folder + log_file, 'rb') as f:
             for line in f:
                 parse = line.split()
                 if len(parse) <= 1:
@@ -81,8 +78,8 @@ def main():
         time_ms = np.array(time_ms)
         time_ms -= time_ms[0]
 
-        for test in TESTS:
-            for scheme in SCHEMES:
+        for test in tests:
+            for scheme in schemes:
                 if test in log_file and scheme in log_file:
                     log_file_id = log_file[len(str(test) + '_log_' + str(scheme) + '_'):]
                     time_all[scheme][test][log_file_id] = time_ms
@@ -102,60 +99,83 @@ def main():
                     print "\n"
                     break
 
-    '''
     qoe_results = {}
     qoe_stddev = {}
-    for scheme in SCHEMES:
+    for scheme in schemes:
         qoe_results[scheme] = []
         qoe_stddev[scheme] = []
-        for test in TESTS:
+        for test in tests:
             print "QoE vals: ", qoe_vals[scheme][test]
             qoe_results[scheme].append(np.mean(qoe_vals[scheme][test]))
             qoe_stddev[scheme].append(np.std(qoe_vals[scheme][test]))
 
-    X = np.arange(len(TESTS))
-    x_offset = 0
-    plots_to_label = ()
-    label_names = ()
-    for scheme in SCHEMES:
-        plot = plt.bar(X + x_offset, qoe_results[scheme], yerr=qoe_stddev[scheme], label = scheme, capsize=5, width=0.25, color=colors[scheme])
-        plots_to_label = plots_to_label + (plot[0],)
-        label_names = label_names + (scheme,)
-        x_offset += 0.25
-        print "SCHEME: ", scheme
-        print qoe_results[scheme]
-        print qoe_stddev[scheme]
-        print len(X)
-        '''
-    qoe_results = {}
-    for scheme in SCHEMES:
-        qoe_results[scheme] = []
-        arr = []
-        for tests in TESTS:
-            arr = arr + qoe_vals[scheme][tests]
-        qoe_results[scheme].append(arr)
-    plots_to_label = ()
-    label_names = ()
-    for scheme in SCHEMES:
-    	plot = plt.hist(qoe_results[scheme], normed=True, cumulative=True, label='CDF', histtype='step')
-        plots_to_label = plots_to_label + (plot[0],)
-        #label_names = label_names + (scheme,)
-        if scheme == "RL":
-            label_names = label_names + ("Default",)
-        elif scheme == "retrained":
-            label_names = label_names + ("New Training",)
-        plot[2][0].set_xy(plot[2][0].get_xy()[:-1])
-    # We assume the tests are in the correct order...
-    '''
-    x_tick_labels = tuple(TESTS)
-    n_tests = len(TESTS)
-    offset = 0.25
-    ind = np.arange(offset, n_tests + offset)
-    plt.xticks(ind, x_tick_labels)
-    '''
-    plt.legend(label_names)
-    plt.show()
+    if plot_cdf:
+        qoe_results = {}
+        for scheme in schemes:
+            qoe_results[scheme] = []
+            arr = []
+            for test in tests:
+                arr = arr + qoe_vals[scheme][test]
+            qoe_results[scheme].append(arr)
+        plots_to_label = ()
+        label_names = ()
+        for scheme in schemes:
+            plot = plt.hist(qoe_results[scheme], normed=True, cumulative=True, label='CDF', histtype='step')
+            plots_to_label = plots_to_label + (plot[0],)
+            #label_names = label_names + (scheme,)
+            if scheme == "RL":
+                label_names = label_names + ("Default",)
+            elif scheme == "retrained":
+                label_names = label_names + ("New Training",)
+            plot[2][0].set_xy(plot[2][0].get_xy()[:-1])
+        # We assume the tests are in the correct order...
+        x_tick_labels = tuple(tests)
+        n_tests = len(tests)
+        plt.legend(label_names)
+        plt.ylabel("CDF")
+        plt.xlabel("QoE_lin Values")
+        plt.show()
+    else:
+        X = np.arange(len(tests))
+        x_offset = 0
+        plots_to_label = ()
+        label_names = ()
+        for scheme in schemes:
+            plot = plt.bar(X + x_offset, qoe_results[scheme], yerr=qoe_stddev[scheme], label = scheme, capsize=5, width=0.25, color=colors[scheme])
+            plots_to_label = plots_to_label + (plot[0],)
+            label_names = label_names + (scheme,)
+            x_offset += 0.25
+            print "SCHEME: ", scheme
+            print qoe_results[scheme]
+            print qoe_stddev[scheme]
+            print len(X)
+        # We assume the tests are in the correct order...
+        x_tick_labels = tuple(tests)
+        n_tests = len(tests)
+        offset = 0.25
+        ind = np.arange(offset, n_tests + offset)
+        plt.xticks(ind, x_tick_labels)
+        plt.legend(label_names)
+        plt.ylabel("QoE_lin Values")
+        plt.show()
 
 
 if __name__ == '__main__':
-    main()
+    schemes = ['BOLA', 'robustMPC', 'RL']
+
+    tests_10_tests = ['Verizon_LTE', 'Stanford_Visitor', 'International_Link']
+    results_folder_10_tests = './results/figure_11_10_tests/'
+    main(schemes, tests_10_tests, results_folder_10_tests, False)
+
+    tests_100_tests = ['Stanford_Visitor', 'International_Link']
+    results_folder_100_tests = './results/figure_11_100_tests/'
+    main(schemes, tests_100_tests, results_folder_100_tests, False)
+
+    tests_simulated = ['mahimahi-3G', 'mahimahi-LTE']
+    results_folder_simulated = './results/figure_11_simulated/'
+    main(schemes, tests_simulated, results_folder_simulated, False)
+
+    schemes_figure_13 = ['RL', 'retrained']
+    tests_figure_13 = ['mahimahi-3G', 'mahimahi-LTE']
+    results_folder_figure_13 = './results/figure_13_simulated/'
+    main(schemes_figure_13, tests_figure_13, results_folder_figure_13, True)
