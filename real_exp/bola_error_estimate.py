@@ -112,8 +112,8 @@ def plot_results(true_vals, true_stddevs, best_vals, best_stddevs, worst_vals, w
 # QoE = sum(q(R_n)) - u*sum(T_n) - sum(q(R_n) - q(R_n+1))
 def main():
 
-    colorsList = [['xkcd:sky blue', 'xkcd:royal blue', 'xkcd:cerulean'],
-                  ['xkcd:light red', 'xkcd:rust', 'xkcd:crimson', 'xkcd:scarlet']]
+    colorsList = [['#75bbfd', '#0504aa', '#0485d1'],
+                  ['#ff474c', '#a83c09', '#8c000f']]
     raw_reward_all = {}
     qoe_vals = {}
     qoe_samples = {}
