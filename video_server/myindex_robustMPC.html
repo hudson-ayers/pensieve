@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Dash.js Rocks haha</title>
+        <meta http-equiv="Cache-control" content="no-cache">
     </head>
     <body>
         <div>
@@ -10,11 +11,12 @@
 	<script src="dash.all.min.js"></script>
         <script>
             (function(){
+                setTimeout(function() { window.location.reload(true); }, 240000);
                 var url = "/Manifest.mpd";
                 var player = dashjs.MediaPlayer().create()
 
-                var abr_algorithms = {0: 'Default', 1: 'Fixed Rate (0)', 2: 'Buffer Based', 3: 'Rate Based', 4: 'MPC', 5: 'Festive', 6: 'Bola'};
-                var abr_id = 4;
+                var abr_algorithms = {0: 'Default', 1: 'Fixed Rate (0)', 2: 'Buffer Based', 3: 'Rate Based', 4: 'RL', 5: 'Festive', 6: 'Bola', 7: 'MPC'};
+                var abr_id = 7;
 
                 if ( abr_id > 1 && abr_id != 6 ) {
                     player.enablerlABR(true);

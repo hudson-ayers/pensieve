@@ -2,6 +2,7 @@
 <html>
     <head>
         <title>Dash.js Rocks haha</title>
+        <meta http-equiv="Cache-control" content="no-cache">
     </head>
     <body>
         <div>
@@ -10,6 +11,7 @@
 	<script src="dash.all.min.js"></script>
         <script>
             (function(){
+                setTimeout(function() { window.location.reload(true); }, 240000);
                 var url = "/Manifest.mpd";
                 var player = dashjs.MediaPlayer().create()
 
