@@ -30,7 +30,7 @@ SUMMARY_DIR = './results'
 LOG_FILE = './results/log'
 TEST_LOG_FOLDER = './test_results/'
 TRAIN_TRACES = './cooked_traces/'
-NN_MODEL = './models/nn_model_ep_13600.ckpt'
+NN_MODEL = os.environ['last_model']
 # NN_MODEL = None
 
 
@@ -127,6 +127,8 @@ def central_agent(net_params_queues, exp_queues):
 
         # restore neural net parameters
         nn_model = NN_MODEL
+	if nn_model == "None":
+	    nn_model = None
         if nn_model is not None:  # nn_model is the path to file
             saver.restore(sess, nn_model)
             print("Model restored.")
